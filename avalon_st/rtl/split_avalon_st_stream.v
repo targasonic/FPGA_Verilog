@@ -4,26 +4,26 @@ module test #(
   parameter   PAC_MAX_WIDTH       = 16
 )(
 	// clock & async reset
-	input 			                        clk_i,
-	input 			                        reset_i,
+	input 			            clk_i,
+	input 			            reset_i,
 
 	input         [PAC_MAX_WIDTH-1:0]   packet_max_size_i,
 
 	// sink interface
-	input 			                        asi_snk_valid_i,
-	output 		                          asi_snk_ready_o,
+	input 			            asi_snk_valid_i,
+	output 		                    asi_snk_ready_o,
 	input         [DATA_WIDTH-1:0] 	    asi_snk_data_i,
-	input         [EMPTY_WIDTH-1:0] 	  asi_snk_empty_i,
-	input 			                        asi_snk_startofpacket_i,
-	input 			                        asi_snk_endofpacket_i,
+	input         [EMPTY_WIDTH-1:0]     asi_snk_empty_i,
+	input 			            asi_snk_startofpacket_i,
+	input 			            asi_snk_endofpacket_i,
 
 	// source interface
-	output reg			                    aso_src_valid_o,
-	input 			                        aso_src_ready_i,
+	output reg			    aso_src_valid_o,
+	input 			            aso_src_ready_i,
 	output reg    [DATA_WIDTH-1:0]      aso_src_data_o,
-	output reg    [EMPTY_WIDTH-1:0] 	  aso_src_empty_o,
-	output reg			                    aso_src_startofpacket_o,
-	output reg			                    aso_src_endofpacket_o
+	output reg    [EMPTY_WIDTH-1:0]     aso_src_empty_o,
+	output reg			    aso_src_startofpacket_o,
+	output reg			    aso_src_endofpacket_o
 );
 
 localparam  BUFFER_DATA_WIDTH                        = 128 ;    
