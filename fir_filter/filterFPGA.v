@@ -1,16 +1,16 @@
 module filterFPGA ( clk, coefs, in, out );
 		
-	parameter 		IWIDTH 	= 16 ; 								//	input data (signal) width 
-	parameter 		CWIDTH 	= 16 ; 								// tap coef data width (should be less then 32
-	parameter 		TAPS 		= 3  ; 								//	number of filter taps
+	parameter 		IWIDTH 	= 16 ; 					// input data (signal) width 
+	parameter 		CWIDTH 	= 16 ; 					// tap coef data width (should be less then 32
+	parameter 		TAPS 	= 3  ; 					// number of filter taps
 
 	localparam 		MWIDTH 	= (IWIDTH + CWIDTH); 			// multiplied width
 	localparam 		RWIDTH 	= (MWIDTH + TAPS-1); 			// filter result width
 	
-	input  wire 			 					clk 	; 
-	input  wire [IWIDTH 		- 1 : 0]		in  	;
-	input  wire [TAPS * 16  - 1 : 0]		coefs	; 				// all input coefficient concatineted
-	output wire [RWIDTH 		- 1 : 0]		out	; 				// output takes only top bits part of result
+	input  wire 			 		clk 	; 
+	input  wire [IWIDTH 		- 1 : 0]	in  	;
+	input  wire [TAPS * 16  - 1 : 0]		coefs	; 		// all input coefficient concatineted
+	output wire [RWIDTH 		- 1 : 0]	out	; 		// output takes only top bits part of result
 
 genvar i; 
 
