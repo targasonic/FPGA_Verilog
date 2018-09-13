@@ -11,23 +11,23 @@ module filter #(
 	parameter COEF_22		= 16'b0000000000000000 
 	
 )(
-	input 			           			clk_i   ,
-	input 			               	reset_i ,
+	input 		clk_i   ,
+	input 		reset_i ,
 	
-	input			[DATA_WIDTH - 1:0]   data_i  ,
-	input 									valid_i ,
-	input										frame_i ,
+	input		[DATA_WIDTH - 1:0]   	data_i  ,
+	input 					valid_i ,
+	input					frame_i ,
 
 	output reg	[DATA_WIDTH - 1:0]	data_o  ,
-	output reg								valid_o ,
-	output reg								frame_o
+	output reg				valid_o ,
+	output reg				frame_o
 );
 
 wire  [ DATA_WIDTH - 1:0 ] data_lineb , data_linea, flr_o;
-reg   [ DATA_WIDTH - 1:0 ] data_line2 = 0 , 	data_i2 = 0 ;
-reg 	[ DATA_WIDTH - 1:0 ] a0 = 0 , a1 = 0 , a2 = 0 , b0 = 0 , b1 = 0 , b2 = 0 , c0 = 0 , c1 = 0 , c2 = 0 ;
+reg   [ DATA_WIDTH - 1:0 ] data_line2 = 0 , data_i2 = 0 ;
+reg   [ DATA_WIDTH - 1:0 ] a0 = 0 , a1 = 0 , a2 = 0 , b0 = 0 , b1 = 0 , b2 = 0 , c0 = 0 , c1 = 0 , c2 = 0 ;
 
-reg linea_wrreq = 0; 
+reg 	     linea_wrreq = 0; 
 reg [15 : 0] valid_o_delay ; 
 reg [15 : 0] frame_o_delay ;
 localparam  out_frame_delay     = 8 ; 
@@ -45,7 +45,7 @@ reg fifo_clr;
 always @( posedge clk_i or posedge reset_i )
 if( reset_i )  count_v	 = 0 ;	  
 else		
-					count_v <=  (~frame_o) ?  	0 : ( ~valid_i & valid_o_delay[0] & ~count_v[2] ) ? 	count_v + 1 : count_v  ;
+					count_v <=  (~frame_o) ?  0 : ( ~valid_i & valid_o_delay[0] & ~count_v[2] ) ? 	count_v + 1 : count_v  ;
 
 // Сдвиговые регистры, для формирования окна 3х3 для фильтрации
 always @( posedge clk_i or posedge reset_i )
@@ -54,8 +54,8 @@ begin
 		a0 <= 0; a1 	<= 0 ; a2 <= 0;
 		b0 <= 0; b1 	<= 0 ; b2 <= 0;
 		c0 <= 0; c1 	<= 0 ; c2 <= 0;	
-		data_line2 		<= 0 ;  
-		data_i2			<= 0 ;
+		data_line2 	<= 0 ;  
+		data_i2		<= 0 ;
 		lineb_rdreq 	<= 0 ;
 		linea_rdreq 	<= 0 ;
 		lineb_rdreq_p 	<= 0 ;
@@ -74,7 +74,7 @@ begin
 
 		a0 <= ( linea_rdreq_p ) ? data_linea : ( lineb_rdreq_p ) ? data_lineb : data_line2;
 		b0 <= ( lineb_rdreq_p ) ? data_lineb : data_line2	;
-		c0 <= 											data_line2	;
+		c0 <= data_line2	;
 		
 		a1 <= a0;
 		b1 <= b0;
@@ -87,17 +87,17 @@ end
 
 always @( posedge clk_i or posedge reset_i )
 if( reset_i )	linea_wrreq <= 0;	 	  
-else				linea_wrreq <= lineb_rdreq;
+else		linea_wrreq <= lineb_rdreq;
 
 // CLR FIFO после того как закончился кадр
 always @( posedge clk_i or posedge reset_i )
 if( reset_i )	fifo_clr <= 0;	 	  
-else				fifo_clr <= (~frame_i & ~frame_o_delay [0] & ~frame_o_delay [1] & frame_o_delay [out_frame_delay]);
+else		fifo_clr <= (~frame_i & ~frame_o_delay [0] & ~frame_o_delay [1] & frame_o_delay [out_frame_delay]);
 
 
 always @( posedge clk_i or posedge reset_i )
 if( reset_i )	data_o 	<= 0;	 
-else				data_o 	<= flr_o;
+else		data_o 	<= flr_o;
 
 
 // Необходимые для правильной работы, задержки сигналов
@@ -118,7 +118,7 @@ begin
 	valid_o_delay [6] 	<= valid_o_delay [5];
 	valid_o_delay [7] 	<= valid_o_delay [6];
 	valid_o_delay [8] 	<= valid_o_delay [7];
-	valid_o 					<= valid_o_delay [out_frame_delay - 1]; // (count_v > 0 ) ? valid_o_delay [3] : valid_o_delay [3] ;
+	valid_o 		<= valid_o_delay [out_frame_delay - 1]; 
 	frame_o_delay [0] 	<= frame_i;
 	frame_o_delay [1] 	<= frame_o_delay [0];
 	frame_o_delay [2] 	<= frame_o_delay [1];
@@ -128,7 +128,7 @@ begin
 	frame_o_delay [6] 	<= frame_o_delay [5];
 	frame_o_delay [7] 	<= frame_o_delay [6];
 	frame_o_delay [8] 	<= frame_o_delay [7];
-	frame_o 					<= frame_o_delay [out_frame_delay] || frame_i ;
+	frame_o 		<= frame_o_delay [out_frame_delay] || frame_i ;
 end
 
 
@@ -161,36 +161,30 @@ matrix_filter filter (
 
 // FIFO для буфферизации строк
 line1 line0_buff (
-	.clock 		( clk_i  	 	) ,
-	.data			( data_lineb  	) ,
+	.clock 		( clk_i  	) ,
+	.data		( data_lineb  	) ,
 	.rdreq		( linea_rdreq 	) ,
 	.wrreq		( linea_wrreq 	) ,
-	.q				( data_linea  	) , 
-	.aclr			(fifo_clr)
+	.q		( data_linea  	) , 
+	.aclr		( fifo_clr )
 );
 
 line1 line1_buff (
-	.clock 		( clk_i  	 	) ,
-	.data			( data_i		) ,
+	.clock 		( clk_i  	) ,
+	.data		( data_i	) ,
 	.rdreq		( lineb_rdreq 	) ,
-	.wrreq		( valid_i 		) ,
-	.q				( data_lineb  	) , 
-	.aclr			(fifo_clr)
+	.wrreq		( valid_i 	) ,
+	.q		( data_lineb  	) , 
+	.aclr		( fifo_clr )
 );
 
-
-
-
-
 endmodule
-
-
 
 module matrix_filter
 #(
     parameter DATA_IN_WIDTH    = 8
 )(
-	input 			           					clk_i	,
+   input       					clk_i	,
 	
    input     [DATA_IN_WIDTH - 1 : 0]    	d00_in ,
    input     [DATA_IN_WIDTH - 1 : 0]    	d01_in ,
@@ -202,7 +196,7 @@ module matrix_filter
    input     [DATA_IN_WIDTH - 1 : 0]    	d21_in ,
    input     [DATA_IN_WIDTH - 1 : 0]    	d22_in ,
 	
-	input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_00,
+   input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_00,
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_01,
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_02,
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_10,
@@ -211,7 +205,7 @@ module matrix_filter
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_20,
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_21,
    input     [2 * DATA_IN_WIDTH - 1 : 0]  coef_22, 
-	output reg[DATA_IN_WIDTH - 1 : 0]    	d_out
+   output reg[DATA_IN_WIDTH - 1 : 0]    d_out
 
 );
 
