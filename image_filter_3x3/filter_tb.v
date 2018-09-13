@@ -7,29 +7,29 @@ localparam              COEF_WIDTH  = 16 ;
 localparam              FRAME_V     = 1280 ; 
 localparam              FRAME_H     = 720 ; 
 
-reg 					clk_i		= 0 ;
-reg 					reset_i	    = 1 ;
-reg 					reset	    = 1 ;
+reg 			clk_i		= 0 ;
+reg 			reset_i	    	= 1 ;
+reg 			reset	    	= 1 ;
 reg  [DATA_WIDTH - 1:0]	data_i  	= 0 ;
 wire                    valid_i 	= 0 ;  
 
 reg hsync_pre;
 reg sig_hsync;
 
-reg 						frame_i 	= 0;
+reg 			frame_i 	= 0;
 
 wire   [DATA_WIDTH - 1:0]   data_o  ;
 wire                        valid_o ;
 wire                        frame_o ;
 
-reg 						test_mode 			= 0 ;
-reg [ 15 : 0 ]				test_error_count 	= 0 ;
-reg [ 15 : 0 ] 				test_frame_count 	= 0 ;
-reg [ DATA_WIDTH - 1 : 0 ] 	data_o_test			= 0 ;
+reg 				test_mode		= 0 ;
+reg [ 15 : 0 ]			test_error_count 	= 0 ;
+reg [ 15 : 0 ] 			test_frame_count 	= 0 ;
+reg [ DATA_WIDTH - 1 : 0 ] 	data_o_test		= 0 ;
 reg [ DATA_WIDTH - 1 : 0 ] 	count_o_test		= 0 ;
 reg [ DATA_WIDTH - 1 : 0 ] 	strings_test		= 0 ;
-reg 						frame_o_pre			= 0 ;
-reg 						valid_o_pre			= 0 ;
+reg 				frame_o_pre		= 0 ;
+reg 				valid_o_pre		= 0 ;
 
 
 filter dut (
@@ -54,12 +54,12 @@ initial
 begin
 	if  (int_reset == 0 ) 
 	begin
-				reset_i			= 1'b1;
+			reset_i			= 1'b1;
 		#45 	reset_i 		= 1'b0;
 	end
 	else
 	begin
-				reset_i			= 1'b1;
+			reset_i			= 1'b1;
 		#45 	reset_i 		= 1'b0;
 		#505	reset_i			= 1'b1;
 		#95 	reset_i 		= 1'b0;
@@ -69,12 +69,12 @@ initial
 begin
 	if  (int_reset == 0 ) 
 	begin
-				reset			= 1'b1;
+			reset			= 1'b1;
 		#120	reset 			= 1'b0;
 	end
 	else
 	begin
-				reset			= 1'b1;
+			reset			= 1'b1;
 		#120 	reset 			= 1'b0;
 		#505	reset			= 1'b1;
 		#150 	reset 			= 1'b0;
@@ -96,7 +96,6 @@ always @(posedge clk_i)
 begin
 	if (reset)		frame_i <= 0;
 	else			frame_i <= (countV < FRAME_V ) ?  1 :  0 ;
-//	else			frame_i <= (countV < FRAME_V ) ?  1 : (countV == FRAME_V ) ? hsync_pre : 0 ;
 end
 always @(posedge clk_i)
 begin
@@ -110,7 +109,7 @@ begin
 	begin
 	hsync_pre <= sig_hsync;
 	if (( hsync_pre ) && ( ~sig_hsync ))
-					countV <= (countV < FRAME_V + 5) ? countV + 1'b1 : 0 ;
+				countV <= (countV < FRAME_V + 5) ? countV + 1'b1 : 0 ;
 	end
 end
 
@@ -122,9 +121,9 @@ begin
 	begin
 		case (test_mode)
 		0: 
-			data_i	<= (countH < FRAME_H) 				? countH + 1	: 0 ;									// ( ( j << 4 ) + i [ 3:0 ] )  	: 0  ;
+			data_i	<= (countH < FRAME_H) 	? countH + 1	: 0 ;									// ( ( j << 4 ) + i [ 3:0 ] )  	: 0  ;
 		1: 	
-			data_i	<= (countH < FRAME_H) 				? countV + 1	: 0 ;									// ( ( j << 4 ) + i [ 3:0 ] )  	: 0  ;
+			data_i	<= (countH < FRAME_H) 	? countV + 1	: 0 ;									// ( ( j << 4 ) + i [ 3:0 ] )  	: 0  ;
 		endcase
 	end
 end
@@ -139,12 +138,12 @@ begin
 end
 else
 begin
-		frame_o_pre 		<= frame_o;
-		valid_o_pre 		<= valid_o;
+		frame_o_pre 	<= frame_o;
+		valid_o_pre 	<= valid_o;
 
 
 	//	test_frame_count 	<= (~frame_o * frame_o_pre) ? test_frame_count + 1 : test_frame_count ;
-		count_o_test 		= ( valid_o ) ?  count_o_test + 1 : 0 ;
+		count_o_test 	= ( valid_o ) ?  count_o_test + 1 : 0 ;
 		case (test_mode)
 		0: 
 		begin
@@ -206,11 +205,11 @@ matrix_filter dut_filter (
 
 real 	cc		[9:0] ; // Таблица дробных частей коэффицентов 0.5 0.250 0.125 ....
 real 	coef_rl [9:0] ; // Таблица 
-integer c 				= 0 ;
-integer cbit 			= 0 ;
-integer test_count 		= 32; 
+integer c 		= 0 ;
+integer cbit 		= 0 ;
+integer test_count 	= 32; 
 integer filter_error 	= 0 ;
-real 	filter_sum 		= 0 ;
+real 	filter_sum 	= 0 ;
 reg [7:0] res_tb ,  d_out_pre ;
 reg [7:0] res_tb_pre [9:0] ;
 
